@@ -1,0 +1,85 @@
+---
+- name: verify the database component status at database level
+  environment:
+     ORACLE_HOME: "{{ ORACLE_HOME }}"
+     ORACLE_SID: "{{ ORACLE_SID }}"
+     PATH: "{{ ORACLE_HOME }}/bin:$PATH"
+  ansible.builtin.shell:
+    cmd: |
+      sqlplus -S /nolog <<EOF
+      conn / as sysdba
+      set feedback off
+      SET SERVEROUTPUT ON SIZE 5000;
+      SET LINESIZE 200;
+      set pagesize 2000;
+      set long 500;
+      col comp_name for a35
+      col status for a15
+      col version for a15
+      select instance_name,host_name from v\$instance;
+      show pdbs;
+      select con_id,comp_name,version,status from cdb_registry order by con_id;
+      EOF
+  register: db_component_post_ru_status
+
+- name: display db component post ru status output
+  debug:
+    var: db_component_post_ru_status.stdout_lines
+
+- name: copy the db component post ru status output to a log file
+  copy:
+    content: "{{ db_component_post_ru_status.stdout }}"
+    dest: "{{ log_dir }}/db_component_post_ru_status_{{ ORACLE_SID }}_{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"
+
+- name: verify the patch apply status at database level
+  environment:
+     ORACLE_HOME: "{{ ORACLE_HOME }}"
+     ORACLE_SID: "{{ ORACLE_SID }}"
+     PATH: "{{ ORACLE_HOME }}/bin:$PATH"
+  ansible.builtin.shell:
+    cmd: |
+      sqlplus -S /nolog <<EOF
+      conn / as sysdba
+      set feedback off
+      SET SERVEROUTPUT ON SIZE 5000;
+      SET LINESIZE 200;
+      set pagesize 2000;
+      col version for a15
+      col action_time for a30
+      col action for a10
+      col status for a15
+      col bundle_series for a10
+      col description for a65
+      select instance_name,host_name from v\$instance;
+      select con_id,patch_id,source_version,target_version,status,action,action_time,target_build_description,description from cdb_registry_sqlpatch order by con_id,action_time;
+      select instance_name,host_name from v\$instance;
+      EOF
+  register: db_ru_apply_status
+
+- name: display db release update status output
+  debug:
+    var: db_ru_apply_status.stdout_lines
+
+- name: copy the db release update status output to a log file
+  copy:
+    content: "{{ db_ru_apply_status.stdout }}"
+    dest: "{{ log_dir }}/db_ru_apply_status_{{ ORACLE_SID }}_{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"
+
+# to validate database and related services status
+- name: verify database and related service status on the current node
+  environment:
+     ORACLE_HOME: "{{ ORACLE_HOME }}"
+     ORACLE_SID: "{{ ORACLE_SID }}"
+     PATH: "{{ GI_ORACLE_HOME }}/bin:$PATH"
+  ansible.builtin.shell:
+    cmd: ps -ef | grep pmon;srvctl start service -d {{ ORACLE_SID }};srvctl status service -d {{ ORACLE_SID }};srvctl status database -d {{ ORACLE_SID }}
+  register: post_ru_db_service_status
+
+- name: display database and related service status
+  debug:
+    var: post_ru_db_service_status.stdout_lines
+
+- name: copy the database and related service status log to a file
+  copy:
+    content: "{{ post_ru_db_service_status.stdout }}"
+    dest: "{{ log_dir }}/post_ru_db_service_status_{{ ansible_host }}_{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"

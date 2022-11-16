@@ -1,0 +1,32 @@
+---
+- name: create database home files backup location
+  ansible.builtin.file:
+    path: "{{ patch_dir }}/orahomebackup"
+    state: directory
+    owner: oracle
+    group: dba
+    mode: 0775
+
+- name: create release update installation log files directory
+  ansible.builtin.file:
+    path: "{{ patch_dir }}/ru_apply_log"
+    state: directory
+    owner: oracle
+    group: dba
+    mode: 0775
+
+- name: create release update deinstallation log files directory
+  ansible.builtin.file:
+    path: "{{ patch_dir }}/ru_rollback_log"
+    state: directory
+    owner: oracle
+    group: dba
+    mode: 0775
+
+- name: create local directory to copy release update files
+  ansible.builtin.file:
+    path: "{{ patch_local_dir }}"
+    state: directory
+    owner: oracle
+    group: dba
+    mode: 0775

@@ -1,0 +1,20 @@
+---
+- name: installing release update on the database home
+  become_user: root
+  # environment:
+  #    ORACLE_HOME: "{{ ORACLE_HOME }}"
+  #    PATH: "{{ ORACLE_HOME }}/OPatch:/usr/ccs/bin:$PATH"
+  ansible.builtin.shell:
+    cmd: export ORACLE_HOME="{{ ORACLE_HOME }}";$ORACLE_HOME/OPatch/opatchauto apply {{ patch_local_dir }}/{{ gi_patch_id }} -oh {{ ORACLE_HOME }}
+  register: db_opatch_apply
+
+- name: display database home patch apply log
+  become_user: root
+  debug:
+    var: db_opatch_apply.stdout_lines
+
+- name: copy the database home patch apply log to a file
+  become_user: root
+  copy:
+    content: "{{ db_opatch_apply.stdout }}"
+    dest: "{{ log_dir }}/db_opatch_apply_{{ ansible_host }}_{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"

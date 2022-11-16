@@ -1,0 +1,8 @@
+---
+ - name: compile invalid objects on the database including pdb's
+   environment:
+      ORACLE_HOME: "{{ ORACLE_HOME }}"
+      ORACLE_SID: "{{ ORACLE_SID }}"
+      PATH: "{{ ORACLE_HOME }}/bin:$PATH"
+   ansible.builtin.shell:
+     cmd: "{{ ORACLE_HOME}}/perl/bin/perl {{ ORACLE_HOME }}/rdbms/admin/catcon.pl -n 5 -e -b utlrp -d {{ ORACLE_HOME }}/rdbms/admin utlrp.sql"

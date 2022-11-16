@@ -1,0 +1,20 @@
+---
+# task to install oracle release update on grid infrastructure and database home
+
+- include_tasks: ru_apply_init_main.yml
+  when: release_update_step == "ruinit"
+
+- include_tasks: ru_apply_prerequisites_main.yml
+  when: release_update_step == "ruprecheck"
+
+- include_tasks: ru_apply_main.yml
+  when: release_update_step == "ruapply"
+
+- include_tasks: ru_db_sql_main.yml
+  when: release_update_step == "rudbsql"
+
+- include_tasks: ru_post_validation_main.yml
+  when: release_update_step == "ruvalidate"
+
+- include_tasks: rb_ru_rollback_main.yml
+  when: release_update_step == "rurollback"

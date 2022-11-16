@@ -1,0 +1,7 @@
+---
+# The below list of tasks to stop the database, apply database and grid home release update and start the database
+- include_tasks: stop_database.yml
+- include_tasks: db_home_release_update_apply.yml
+- include_tasks: gi_home_release_update_apply.yml
+- include_tasks: verify_opatch_apply_status.yml
+- include_tasks: start_database.yml

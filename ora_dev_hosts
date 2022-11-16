@@ -1,0 +1,17 @@
+[ora_dev1]
+dloradb11a.wil.csc.local ORACLE_SID=dappsmt 
+dloradb12a.wil.csc.local ORACLE_SID=ddwmt
+
+[ora_dev1:vars]
+GI_ORACLE_HOME=/opt/app/grid/19c/gi_1
+ORACLE_HOME=/opt/app/oracle/product/19.11.0.0/db_1
+
+
+[ora_dev2]
+dloradb13a.wil.csc.local ORACLE_SID=dssmt
+dloradb14a.wil.csc.local ORACLE_SID=ddbsmt
+dloradb16a.wil.csc.local ORACLE_SID=dclsmt
+
+[ora_dev2:vars]
+GI_ORACLE_HOME=/opt/app/grid/19c/gi_1
+ORACLE_HOME=/opt/app/oracle/product/19c/db_1

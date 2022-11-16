@@ -1,0 +1,9 @@
+---
+- name: oracle database release update installation
+  hosts: ora_sand1 # {{ host_group }}"
+  become_method: sudo
+  become_user: oracle
+  become: true
+  roles:
+    - ansible-role_orapatch
+...
