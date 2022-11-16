@@ -9,7 +9,7 @@ with the following contents:
 ```bash
 ---
 - name: ansible-role_orapatch
-  src: https://cscgithub.cscglobal.com/INFRA/ansible-role_orapatch
+  src: 
   scm: git
 ```
 
